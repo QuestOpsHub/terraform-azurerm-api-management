@@ -1,0 +1,74 @@
+<!--
+===============================================================================
+IMPORTANT:
+- This is the GLOBAL API Management policy applied at the APIM service level.
+- Policies are evaluated in the following order:
+    1. inbound   (request validation, security checks)
+    2. backend   (forwarding to backend services)
+    3. outbound  (response manipulation, headers)
+    4. on-error  (error handling)
+- Policy statements are executed top-down within each section.
+
+WHEN TO MODIFY:
+- You MAY relax security checks in DEV for debugging.
+- You SHOULD NOT remove base policies unless you know the impact.
+- Do NOT hardcode environment-specific values in this file.
+
+VALUES:
+- {{frontdoor_id}} is a Named Value in APIM (NOT a secret).
+- Update the Named Value per environment instead of editing this file.
+===============================================================================
+-->
+<policies>
+    <inbound>
+        <!--
+        IMPORTANT:
+        - <base /> ensures that inherited policies are executed.
+        - Always keep <base /> unless explicitly replacing all policies.
+        -->
+        <base />
+
+        <!--
+        IMPORTANT:
+        - Validates that traffic is coming through Azure Front Door.
+        - This check is OPTIONAL in DEV but recommended.
+        - Header value is injected via APIM Named Value: frontdoor_id
+        -->
+        <check-header name="X-Azure-FDID"
+                      failed-check-httpcode="403"
+                      failed-check-error-message="Invalid request."
+                      ignore-case="true">
+            <value>{{frontdoor_id}}</value>
+        </check-header>
+    </inbound>
+
+    <backend>
+        <!--
+        IMPORTANT:
+        - forward-request sends the request to the configured backend.
+        - Only forward-request is allowed in the backend section.
+        -->
+        <forward-request />
+    </backend>
+
+    <outbound>
+        <!--
+        IMPORTANT:
+        - Security headers should be enforced in all environments.
+        -->
+        <base />
+
+        <set-header name="Strict-Transport-Security" exists-action="append">
+            <value>max-age=31536000; includeSubDomains</value>
+        </set-header>
+    </outbound>
+
+    <on-error>
+        <!--
+        IMPORTANT:
+        - on-error executes when an unhandled error occurs.
+        - <base /> ensures default error handling is preserved.
+        -->
+        <base />
+    </on-error>
+</policies>

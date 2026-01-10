@@ -1,17 +1,15 @@
+# @todo add all supported arguments in this module
 #----------------
 # API Management
 #----------------
 resource "azurerm_api_management" "api_management" {
-  name                       = var.name
-  location                   = var.location
-  resource_group_name        = var.resource_group_name
-  publisher_name             = var.publisher_name
-  publisher_email            = var.publisher_email
-  sku_name                   = var.sku_name
-  client_certificate_enabled = var.sku_name == "Consumption" ? try(var.client_certificate_enabled, null) : null
-  gateway_disabled           = try(var.additional_location, null) != null ? try(var.gateway_disabled, null) : null
-  min_api_version            = try(var.min_api_version, null)
-  zones                      = try(var.zones, [])
+  name                = var.name
+  location            = var.location
+  resource_group_name = var.resource_group_name
+  publisher_name      = var.publisher_name
+  publisher_email     = var.publisher_email
+  sku_name            = var.sku_name
+  min_api_version     = try(var.min_api_version, "2019-12-01")
 
   dynamic "identity" {
     for_each = try(var.identity.type, null) != null ? [var.identity.type] : []
@@ -21,18 +19,19 @@ resource "azurerm_api_management" "api_management" {
     }
   }
 
-  security {
-    backend_ssl30_enabled  = try(var.security.backend_ssl30_enabled, false)
-    backend_tls10_enabled  = try(var.security.backend_tls10_enabled, false)
-    backend_tls11_enabled  = try(var.security.backend_tls11_enabled, false)
-    frontend_ssl30_enabled = try(var.security.frontend_ssl30_enabled, false)
-    frontend_tls10_enabled = try(var.security.frontend_tls10_enabled, false)
-    frontend_tls11_enabled = try(var.security.frontend_tls11_enabled, false)
+  dynamic "security" {
+    for_each = try(var.security, {}) != {} ? [var.security] : []
+    content {
+      enable_backend_ssl30  = lookup(security.value, "enable_backend_ssl30", false)
+      enable_backend_tls10  = lookup(security.value, "enable_backend_tls10", false)
+      enable_backend_tls11  = lookup(security.value, "enable_backend_tls11", false)
+      enable_frontend_ssl30 = lookup(security.value, "enable_frontend_ssl30", false)
+      enable_frontend_tls10 = lookup(security.value, "enable_frontend_tls10", false)
+      enable_frontend_tls11 = lookup(security.value, "enable_frontend_tls11", false)
+    }
   }
 
-  public_ip_address_id          = var.sku_name == "Premium" || var.sku_name == "Developer" ? try(var.public_ip_address_id, null) : null
   public_network_access_enabled = try(var.public_network_access_enabled, true)
-  virtual_network_type          = try(var.virtual_network_type, "None")
 
   tags = var.tags
   lifecycle {
@@ -40,4 +39,41 @@ resource "azurerm_api_management" "api_management" {
       tags["creation_timestamp"],
     ]
   }
+}
+
+#-----------------------
+# API Management Policy
+#-----------------------
+resource "azurerm_api_management_policy" "api_management_policy" {
+  api_management_id = azurerm_api_management.api_management.id
+  xml_content       = file("${path.module}/scripts/global_policy_${var.environment}.xml")
+}
+
+#-----------------------
+# API Management Logger
+#-----------------------
+resource "azurerm_api_management_logger" "api_management_logger" {
+  name                = var.api_management_logger_name
+  api_management_name = azurerm_api_management.api_management.name
+  resource_group_name = azurerm_api_management.api_management.resource_group_name
+  resource_id         = var.resource_id
+
+  application_insights {
+    instrumentation_key = var.instrumentation_key
+  }
+}
+
+#---------------------------
+# API Management Diagnostic
+#---------------------------
+resource "azurerm_api_management_diagnostic" "api_management_diagnostic" {
+  resource_group_name       = azurerm_api_management.api_management.resource_group_name
+  api_management_name       = azurerm_api_management.api_management.name
+  api_management_logger_id  = azurerm_api_management_logger.api_management_logger.id
+  identifier                = var.identifier
+  sampling_percentage       = var.sampling_percentage
+  always_log_errors         = var.always_log_errors
+  log_client_ip             = var.log_client_ip
+  verbosity                 = var.verbosity
+  http_correlation_protocol = var.http_correlation_protocol
 }

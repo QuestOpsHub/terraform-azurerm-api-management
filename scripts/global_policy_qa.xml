@@ -1,0 +1,48 @@
+<!--
+===============================================================================
+IMPORTANT:
+- QA policies should closely mirror PROD behavior.
+- Debug-only or relaxed rules should NOT exist here.
+- All environment-specific values must be provided via Named Values.
+
+VALUES:
+- {{frontdoor_id}} must be configured in APIM Named Values.
+===============================================================================
+-->
+<policies>
+    <inbound>
+        <base />
+
+        <!--
+        IMPORTANT:
+        - Enforces trusted ingress through Azure Front Door.
+        - Requests without the correct header will be rejected.
+        -->
+        <check-header name="X-Azure-FDID"
+                      failed-check-httpcode="403"
+                      failed-check-error-message="Invalid request."
+                      ignore-case="true">
+            <value>{{frontdoor_id}}</value>
+        </check-header>
+    </inbound>
+
+    <backend>
+        <forward-request />
+    </backend>
+
+    <outbound>
+        <base />
+
+        <!--
+        IMPORTANT:
+        - Enforce HSTS for all client responses.
+        -->
+        <set-header name="Strict-Transport-Security" exists-action="append">
+            <value>max-age=31536000; includeSubDomains</value>
+        </set-header>
+    </outbound>
+
+    <on-error>
+        <base />
+    </on-error>
+</policies>

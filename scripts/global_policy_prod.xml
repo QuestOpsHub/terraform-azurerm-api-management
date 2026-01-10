@@ -1,0 +1,52 @@
+<!--
+===============================================================================
+IMPORTANT:
+- PROD policies must be strict and minimal.
+- Never bypass ingress validation in production.
+- Do NOT add debug headers or relaxed checks.
+
+SECURITY REQUIREMENTS:
+- All traffic must come from a trusted ingress (Front Door).
+- Backend services should be private and unreachable directly.
+
+VALUES:
+- {{frontdoor_id}} is injected via APIM Named Values.
+===============================================================================
+-->
+<policies>
+    <inbound>
+        <base />
+
+        <!--
+        IMPORTANT:
+        - Reject any request not coming from Azure Front Door.
+        - This is a hard security boundary.
+        -->
+        <check-header name="X-Azure-FDID"
+                      failed-check-httpcode="403"
+                      failed-check-error-message="Forbidden."
+                      ignore-case="true">
+            <value>{{frontdoor_id}}</value>
+        </check-header>
+    </inbound>
+
+    <backend>
+        <forward-request />
+    </backend>
+
+    <outbound>
+        <base />
+
+        <!--
+        IMPORTANT:
+        - Enforce strict transport security.
+        -->
+        <set-header name="Strict-Transport-Security" exists-action="append">
+            <value>max-age=31536000; includeSubDomains</value>
+        </set-header>
+    </outbound>
+
+    <on-error>
+        <base />
+    </on-error>
+</policies>
