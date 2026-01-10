@@ -13,19 +13,7 @@ variable "publisher_email" {}
 
 variable "sku_name" {}
 
-variable "additional_location" {
-  default = null
-}
-
-variable "certificate" {
-  default = null
-}
-
 variable "client_certificate_enabled" {
-  default = null
-}
-
-variable "delegation" {
   default = null
 }
 
