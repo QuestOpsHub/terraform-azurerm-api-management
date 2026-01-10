@@ -1,4 +1,4 @@
-# @todo add all supported arguments in this module
+# @todo add all supported arguments
 #----------------
 # API Management
 #----------------
