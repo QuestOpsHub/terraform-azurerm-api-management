@@ -80,11 +80,12 @@ variable "api_management_logger_name" {
 variable "resource_id" {
   description = "(Optional) The target resource id which will be linked in the API-Management portal page. Changing this forces a new resource to be created."
   type        = string
+  default     = null
 }
 
-variable "instrumentation_key" {
-  description = "(Optional) The instrumentation key used to push data to Application Insights."
-  type        = string
+variable "application_insights" {
+  description = "(Optional) An application_insights block as documented below."
+  default     = {}
 }
 
 #---------------------------
@@ -98,24 +99,29 @@ variable "identifier" {
 variable "always_log_errors" {
   description = "(Optional) Always log errors. Send telemetry if there is an erroneous condition, regardless of sampling settings."
   type        = bool
+  default     = null
 }
 
 variable "http_correlation_protocol" {
   description = "(Optional) The HTTP Correlation Protocol to use. Possible values are None, Legacy or W3C."
   type        = string
+  default     = null
 }
 
 variable "log_client_ip" {
   description = "(Optional) Log client IP address."
   type        = bool
+  default     = null
 }
 
 variable "sampling_percentage" {
   description = "(Optional) Sampling (%). For high traffic APIs, please read this documentation to understand performance implications and log sampling. Valid values are between 0.0 and 100.0."
   type        = number
+  default     = null
 }
 
 variable "verbosity" {
   description = "(Optional) Logging verbosity. Possible values are verbose, information or error."
   type        = string
+  default     = null
 }

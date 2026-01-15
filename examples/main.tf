@@ -58,20 +58,24 @@ module "api_management" {
   publisher_email     = "questopshub.microsoft_gmail.com#EXT#@questopshubmicrosoftgmail.onmicrosoft.com"
   sku_name            = "Basic_1"
   identity = {
-    type     = "UserAssigned"
-    identity = module.user_assigned_identity.id
+    type         = "UserAssigned"
+    identity_ids = [module.user_assigned_identity.id]
   }
   security = {
     frontend_ssl30_enabled = true
   }
   public_network_access_enabled = true
-  environment                   = local.environment
+  environment                   = local.resource_tags.environment
   identifier                    = "applicationinsights"
   api_management_logger_name    = "apim-logger"
-  sampling_percentage           = 100.0
-  always_log_errors             = true
-  log_client_ip                 = true
-  verbosity                     = "information"
-  http_correlation_protocol     = "W3C"
-  tags                          = merge(local.resource_tags, local.timestamp_tag)
+  resource_id                   = module.application_insights.id
+  application_insights = {
+    instrumentation_key = module.application_insights.instrumentation_key
+  }
+  sampling_percentage       = 100.0
+  always_log_errors         = true
+  log_client_ip             = true
+  verbosity                 = "information"
+  http_correlation_protocol = "W3C"
+  tags                      = merge(local.resource_tags, local.timestamp_tag)
 }

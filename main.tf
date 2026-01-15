@@ -54,12 +54,16 @@ resource "azurerm_api_management_policy" "api_management_policy" {
 #-----------------------
 resource "azurerm_api_management_logger" "api_management_logger" {
   name                = var.api_management_logger_name
-  api_management_name = azurerm_api_management.api_management.name
   resource_group_name = azurerm_api_management.api_management.resource_group_name
-  resource_id         = var.resource_id
+  api_management_name = azurerm_api_management.api_management.name
+  resource_id         = try(var.resource_id, null)
 
-  application_insights {
-    instrumentation_key = var.instrumentation_key
+  dynamic "application_insights" {
+    for_each = try(var.application_insights, {}) != {} ? [var.application_insights] : []
+    content {
+      connection_string   = lookup(security.value, "connection_string", null)
+      instrumentation_key = lookup(security.value, "instrumentation_key", null)
+    }
   }
 }
 
@@ -71,9 +75,9 @@ resource "azurerm_api_management_diagnostic" "api_management_diagnostic" {
   api_management_name       = azurerm_api_management.api_management.name
   api_management_logger_id  = azurerm_api_management_logger.api_management_logger.id
   identifier                = var.identifier
-  always_log_errors         = var.always_log_errors
-  http_correlation_protocol = var.http_correlation_protocol
-  log_client_ip             = var.log_client_ip
-  sampling_percentage       = var.sampling_percentage
-  verbosity                 = var.verbosity
+  always_log_errors         = try(var.always_log_errors, null)
+  http_correlation_protocol = try(var.http_correlation_protocol, null)
+  log_client_ip             = try(var.log_client_ip, null)
+  sampling_percentage       = try(var.sampling_percentage, null)
+  verbosity                 = try(var.verbosity, null)
 }
