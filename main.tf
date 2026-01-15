@@ -44,10 +44,10 @@ resource "azurerm_api_management" "api_management" {
 #-----------------------
 # API Management Policy
 #-----------------------
-resource "azurerm_api_management_policy" "api_management_policy" {
-  api_management_id = azurerm_api_management.api_management.id
-  xml_content       = file("${path.module}/scripts/global_policy_${var.environment}.xml")
-}
+# resource "azurerm_api_management_policy" "api_management_policy" {
+#   api_management_id = azurerm_api_management.api_management.id
+#   xml_content       = file("${path.module}/scripts/global_policy_${var.environment}.xml")
+# }
 
 #-----------------------
 # API Management Logger
