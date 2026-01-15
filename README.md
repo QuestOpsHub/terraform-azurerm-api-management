@@ -29,7 +29,7 @@ No modules.
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_always_log_errors"></a> [always\_log\_errors](#input\_always\_log\_errors) | (Optional) Always log errors. Send telemetry if there is an erroneous condition, regardless of sampling settings. | `bool` | n/a | yes |
-| <a name="input_api_management_logger_name"></a> [api\_management\_logger\_name](#input\_api\_management\_logger\_name) | value | `string` | n/a | yes |
+| <a name="input_api_management_logger_name"></a> [api\_management\_logger\_name](#input\_api\_management\_logger\_name) | (Required) The name of this Logger, which must be unique within the API Management Service. Changing this forces a new resource to be created. | `string` | n/a | yes |
 | <a name="input_environment"></a> [environment](#input\_environment) | ----------------------- API Management Policy ----------------------- | `string` | `"dev"` | no |
 | <a name="input_http_correlation_protocol"></a> [http\_correlation\_protocol](#input\_http\_correlation\_protocol) | (Optional) The HTTP Correlation Protocol to use. Possible values are None, Legacy or W3C. | `string` | n/a | yes |
 | <a name="input_identifier"></a> [identifier](#input\_identifier) | (Required) The diagnostic identifier for the API Management Service. At this time the supported values are applicationinsights and azuremonitor. Changing this forces a new resource to be created. | `string` | n/a | yes |

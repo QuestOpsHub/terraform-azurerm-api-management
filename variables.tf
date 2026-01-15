@@ -73,7 +73,7 @@ variable "environment" {
 # API Management Logger
 #-----------------------
 variable "api_management_logger_name" {
-  description = "value"
+  description = "(Required) The name of this Logger, which must be unique within the API Management Service. Changing this forces a new resource to be created."
   type        = string
 }
 
@@ -95,14 +95,14 @@ variable "identifier" {
   type        = string
 }
 
-variable "sampling_percentage" {
-  description = "(Optional) Sampling (%). For high traffic APIs, please read this documentation to understand performance implications and log sampling. Valid values are between 0.0 and 100.0."
-  type        = number
-}
-
 variable "always_log_errors" {
   description = "(Optional) Always log errors. Send telemetry if there is an erroneous condition, regardless of sampling settings."
   type        = bool
+}
+
+variable "http_correlation_protocol" {
+  description = "(Optional) The HTTP Correlation Protocol to use. Possible values are None, Legacy or W3C."
+  type        = string
 }
 
 variable "log_client_ip" {
@@ -110,12 +110,12 @@ variable "log_client_ip" {
   type        = bool
 }
 
-variable "verbosity" {
-  description = "(Optional) Logging verbosity. Possible values are verbose, information or error."
-  type        = string
+variable "sampling_percentage" {
+  description = "(Optional) Sampling (%). For high traffic APIs, please read this documentation to understand performance implications and log sampling. Valid values are between 0.0 and 100.0."
+  type        = number
 }
 
-variable "http_correlation_protocol" {
-  description = "(Optional) The HTTP Correlation Protocol to use. Possible values are None, Legacy or W3C."
+variable "verbosity" {
+  description = "(Optional) Logging verbosity. Possible values are verbose, information or error."
   type        = string
 }

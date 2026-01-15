@@ -22,12 +22,12 @@ resource "azurerm_api_management" "api_management" {
   dynamic "security" {
     for_each = try(var.security, {}) != {} ? [var.security] : []
     content {
-      enable_backend_ssl30  = lookup(security.value, "enable_backend_ssl30", false)
-      enable_backend_tls10  = lookup(security.value, "enable_backend_tls10", false)
-      enable_backend_tls11  = lookup(security.value, "enable_backend_tls11", false)
-      enable_frontend_ssl30 = lookup(security.value, "enable_frontend_ssl30", false)
-      enable_frontend_tls10 = lookup(security.value, "enable_frontend_tls10", false)
-      enable_frontend_tls11 = lookup(security.value, "enable_frontend_tls11", false)
+      backend_ssl30_enabled  = lookup(security.value, "backend_ssl30_enabled", false)
+      backend_tls10_enabled  = lookup(security.value, "backend_tls10_enabled", false)
+      backend_tls11_enabled  = lookup(security.value, "backend_tls11_enabled", false)
+      frontend_ssl30_enabled = lookup(security.value, "frontend_ssl30_enabled", false)
+      frontend_tls10_enabled = lookup(security.value, "frontend_tls10_enabled", false)
+      frontend_tls11_enabled = lookup(security.value, "frontend_tls11_enabled", false)
     }
   }
 
@@ -71,9 +71,9 @@ resource "azurerm_api_management_diagnostic" "api_management_diagnostic" {
   api_management_name       = azurerm_api_management.api_management.name
   api_management_logger_id  = azurerm_api_management_logger.api_management_logger.id
   identifier                = var.identifier
-  sampling_percentage       = var.sampling_percentage
   always_log_errors         = var.always_log_errors
-  log_client_ip             = var.log_client_ip
-  verbosity                 = var.verbosity
   http_correlation_protocol = var.http_correlation_protocol
+  log_client_ip             = var.log_client_ip
+  sampling_percentage       = var.sampling_percentage
+  verbosity                 = var.verbosity
 }
