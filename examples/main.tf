@@ -49,7 +49,7 @@ module "application_insights" {
 #----------------
 # @todo add all supported arguments
 module "api_management" {
-  source = "git::https://github.com/QuestOpsHub/terraform-azurerm-api-management.git?ref=v1.0.2"
+  source = "git::https://github.com/QuestOpsHub/terraform-azurerm-api-management.git?ref=v1.0.3"
 
   name                = "apim-${local.resource_suffix}"
   location            = module.resource_group.location
