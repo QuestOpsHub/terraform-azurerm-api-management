@@ -61,8 +61,8 @@ resource "azurerm_api_management_logger" "api_management_logger" {
   dynamic "application_insights" {
     for_each = try(var.application_insights, {}) != {} ? [var.application_insights] : []
     content {
-      connection_string   = lookup(security.value, "connection_string", null)
-      instrumentation_key = lookup(security.value, "instrumentation_key", null)
+      connection_string   = lookup(application_insights.value, "connection_string", null)
+      instrumentation_key = lookup(application_insights.value, "instrumentation_key", null)
     }
   }
 }
